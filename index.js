@@ -197,8 +197,10 @@ function debug() {
 function keyPressed() {
     if (keyCode === LEFT_ARROW) {
         save(`${inputHash}.png`);
-    } else if(key === RIGHT_ARROW) {
+    } else if(key === " ") {
     	//flip();
+    	saveGif('mySketch', 5);
+    	console.log("saving");
     }
 }
 
