@@ -127,7 +127,7 @@ function setup() {
 
     pg.translate(-pg.width/2, -pg.height/2);
     pg.rectMode(CORNER);
-    pg.background(255,255,0);
+    pg.background(0);
     
     pg.noStroke();
     for(let y = 0; y<32; y++) {
@@ -171,6 +171,7 @@ function draw() {
     //setImage();
     background(0,0,255);
     fill(255);
+    pg.clear();
 
     for(let i = 0; i<cells.length; i++) {
     	cells[i].setTarget(int(random(0,patterns.length)));
@@ -313,9 +314,9 @@ class Cell {
 
 	display() {
 		//pg.fill(this.bg); // old
-		pg.fill(0);
+		// pg.fill(255);
 
-		pg.rect((this.x*this.tileSize*pixelFactor), (this.y*this.tileSize*pixelFactor), this.tileSize*pixelFactor, this.tileSize*pixelFactor);
+		// pg.rect((this.x*this.tileSize*pixelFactor), (this.y*this.tileSize*pixelFactor), this.tileSize*pixelFactor, this.tileSize*pixelFactor);
 		let x = 0;
 		let y = 0;
 
