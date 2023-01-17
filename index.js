@@ -15,18 +15,7 @@ let tileHeight;
 
 let cells = [];
 let tiles = [];
-const patterns = [
-		// ⬜️
-		[
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-			[0,0,0,0,0,0,0,0],
-		],
+let patterns = [
 		//+
 		[
 			[0,0,0,0,0,0,0,0],
@@ -60,17 +49,6 @@ const patterns = [
 			[1,0,0,1,1,0,0,1],
 			[0,0,0,1,1,0,0,0],
 		],
-		//⬛️
-		[
-			[1,1,1,1,1,1,1,1],
-			[1,1,1,1,1,1,1,1],
-			[1,1,1,1,1,1,1,1],
-			[1,1,1,1,1,1,1,1],
-			[1,1,1,1,1,1,1,1],
-			[1,1,1,1,1,1,1,1],
-			[1,1,1,1,1,1,1,1],
-			[1,1,1,1,1,1,1,1],
-		],
 
 		//×
 		[
@@ -83,8 +61,28 @@ const patterns = [
 			[0,1,0,0,0,0,1,0],
 			[1,0,0,0,0,0,0,1],
 		],
+		[
+			[1,1,1,1,1,1,1,1],
+			[1,0,0,0,0,0,0,1],
+			[1,0,0,0,0,0,0,1],
+			[1,0,0,1,1,0,0,1],
+			[1,0,0,1,1,0,0,1],
+			[1,0,0,0,0,0,0,1],
+			[1,0,0,0,0,0,0,1],
+			[1,1,1,1,1,1,1,1],
+		],
+
 	];
 
+
+function invertPatterns() {
+	const invertedPatterns = []
+	for(const pattern of patterns) {
+		const invertedPattern = pattern.map(a => a.map(i => Math.abs(i - 1)))
+		invertedPatterns.push(invertedPattern)
+	}
+	patterns = patterns.concat(invertedPatterns)
+}
 
 function setSeeds(hash) {
     num = hash.split("").reduce((acc, cur) => acc * cur.charCodeAt(0), 1);
@@ -97,6 +95,7 @@ function setSeeds(hash) {
 /* * * * * * */
 
 function setup() {
+	invertPatterns()
     setSeeds(fxhash);
     //let is = min(windowHeight, windowWidth);
     canvas = createCanvas(pixelWidth*pixelFactor, pixelWidth*pixelFactor, WEBGL);
@@ -109,8 +108,8 @@ function setup() {
 
     canvas.imageSmoothingEnabled = false;
     this._renderer.getTexture(pg).setInterpolation(NEAREST, NEAREST);
-    pg.pixelDensity(1);
-    pixelDensity(1);
+    pg.pixelDensity(2);
+    pixelDensity(2);
     pg.noSmooth();
     pg.ellipseMode(CORNER);
 
@@ -278,9 +277,9 @@ class Cell {
 							}	
 						}
 						
-						if(this.moveX > this.tileSize) {
-							this.moveX = 0;
-							this.isReady = true;
+						if(this.moveX > 4 * this.tileSize) {
+							this.moveX = -16;
+							if(random() < 0.5) this.isReady = true;
 						}
 					break;
 
@@ -297,9 +296,9 @@ class Cell {
 							}	
 						}
 						
-						if(this.moveX < 0) {
-							this.moveX = 8;
-							this.isReady = true;
+						if(this.moveX < -32) {
+							this.moveX = 16;
+							if(random() < 0.5) this.isReady = true;
 						}
 					break;
 				}
@@ -345,9 +344,9 @@ class Cell {
 					this.target[i][j] = patterns[this.currentPattern][i][j];
 				}
 			}
-				let r = int(random(0,10));
+				let r = random([3,4,5,6,7])
 				// let r = 8;
-				let t = int(random(60,100));
+				let t = int(random(50, 100));
 				for(let i = 0; i<this.tileSize*this.tileSize; i++) {
 					this.tiles[i].setMode(r);
 					this.tiles[i].setInterval(t);
@@ -368,7 +367,7 @@ class Tile {
 		this.tileHeight = tileHeight/this.tileSize;
 
 		this.timestamp = 0;
-		this.interval = 30;
+		this.interval = 500;
 		this.state = 0;
 		this.busy = false;
 		this.counter = 0;
@@ -380,7 +379,8 @@ class Tile {
 			if(millis() - this.timestamp > this.interval) {
 				this.timestamp = millis();
 				this.counter++;
-				if(this.counter >= pixelFactor) {
+				
+				if(this.counter >= 20 * pixelFactor) {
 					this.busy = false;
 				}
 			}
